@@ -1,6 +1,6 @@
 # 📊 Weekly Strong Stock Scanner
 
-This Python tool scans weekly stock data from ISYatirim using multiple technical analysis indicators to identify strong buy signals. 🚀
+This Python tool scans weekly stock data from ISYatirim or YAHOO Finance using multiple technical analysis indicators to identify strong buy signals. 🚀
 
 ---
 
