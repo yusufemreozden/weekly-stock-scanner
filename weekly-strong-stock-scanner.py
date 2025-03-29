@@ -1,9 +1,21 @@
+# ************************************************************************** #
+#                                                                            #
+#    Weekly Strong Stock Scanner                                             #
+#                                                                            #
+#    By: Yusuf Emre OZDEN | <yusufemreozdenn@gmail.com>                      #
+#                                                                            #                                            
+#    https://GitHub.com/yusufemreozden                                       #
+#    https://linkedIn.com/in/yusufemreozden                                  #
+#                                                                            #
+# ************************************************************************** #
+
 import pandas as pd
 import numpy as np
 import os
 from datetime import datetime
 
-# === RSI ===
+# === TEKNIK ARACLARIM === #
+
 def calculate_rsi(series, period=14):
     delta = series.diff()
     gain = delta.clip(lower=0)
@@ -13,7 +25,6 @@ def calculate_rsi(series, period=14):
     rs = avg_gain / avg_loss
     rsi = 100 - (100 / (1 + rs))
     return rsi
-
 def get_rsi_signal(df):
     df['RSI'] = calculate_rsi(df['CLOSING_TL'])
     if len(df) < 2:
@@ -23,15 +34,12 @@ def get_rsi_signal(df):
     if rsi_prev < 65 and rsi_now > 65 and rsi_now > 40:
         return 'AL'
     return None
-
-# === MACD ===
 def calculate_macd(series, fast=12, slow=26, signal=9):
     ema_fast = series.ewm(span=fast, adjust=False).mean()
     ema_slow = series.ewm(span=slow, adjust=False).mean()
     macd_line = ema_fast - ema_slow
     signal_line = macd_line.ewm(span=signal, adjust=False).mean()
     return macd_line, signal_line
-
 def get_macd_signal(df):
     macd, signal = calculate_macd(df['CLOSING_TL'])
     if len(macd) < 2:
@@ -39,14 +47,11 @@ def get_macd_signal(df):
     if macd.iloc[-2] < signal.iloc[-2] and macd.iloc[-1] > signal.iloc[-1]:
         return 'AL'
     return None
-
-# === MDTM ===
 def calculate_t3_ema(series, period):
     ema1 = series.ewm(span=period, adjust=False).mean()
     ema2 = ema1.ewm(span=period, adjust=False).mean()
     ema3 = ema2.ewm(span=period, adjust=False).mean()
     return 3 * ema1 - 3 * ema2 + ema3
-
 def get_mdtm_signal(df, short_period=24, long_period=26, signal_period=24):
     ma1 = calculate_t3_ema(df['CLOSING_TL'], short_period)
     ma2 = calculate_t3_ema(df['CLOSING_TL'], long_period)
@@ -57,6 +62,7 @@ def get_mdtm_signal(df, short_period=24, long_period=26, signal_period=24):
     if mdtm.iloc[-2] < trigger.iloc[-2] and mdtm.iloc[-1] > trigger.iloc[-1]:
         return 'AL'
     return None
+
 
 # === Ana Tarama ===
 def run_multi_signal_scan(data_folder, output_path):
@@ -97,7 +103,7 @@ def run_multi_signal_scan(data_folder, output_path):
     else:
         print("Hiçbir hisse için 2/3 AL sinyali oluşmadı.")
 
-# === Çalıştır ===
+# === EXECUTE ===
 if __name__ == "__main__":
     today = datetime.today().strftime('%Y-%m-%d')
     data_folder = '/Users/yusufemreozden/Desktop/HAFTALIK_TARAMA'
